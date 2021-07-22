@@ -85,10 +85,60 @@ public class lc_543_DiameterOfBinaryTree {
         int rightH = findHeight(root.right);
         int leftDiameter = findDiameterTree(root.left);
         int rightDiameter = findDiameterTree(root.right);
-        int heightD = 1 + leftH + rightH; // when diameter pass via root
-        int diameter = Math.max(leftDiameter, rightDiameter); // when diameter not pass via root
-        return (heightD > diameter)? heightD : diameter;
+        int diameterViaRoot = 1 + leftH + rightH; // when diameterNotViaRoot pass via root
+        int diameterNotViaRoot = Math.max(leftDiameter, rightDiameter); // when diameterNotViaRoot not pass via root
+        return (diameterViaRoot > diameterNotViaRoot)? diameterViaRoot : diameterNotViaRoot;
 
+    }
+    static int answer = 0;
+    public static int findDiamterTree_1(TreeNode root){
+
+        // Keep track of two values
+        // one is answer which is global variable
+        getDiameter(root);
+        return (answer == 0)? 0 : answer-1;
+    }
+
+    public static int getDiameter(TreeNode root){
+        // base case
+        if (root == null) return 0;
+        // find the length of left side of the root node
+        int leftHeight = getDiameter(root.left);
+        int rightHeight = getDiameter(root.right);
+
+        answer = Math.max(answer, leftHeight + rightHeight + 1); // 1 means including the current node
+        return Math.max(leftHeight, rightHeight)+1;
+    }
+
+    public static int findDiameterTreeRecursive(TreeNode root){
+        if (root == null) return 0;
+        // Case 1 : find both leftSub-tree height and right sub-tree height
+        int leftHeight = heightOfBinaryTree(root.left);
+        int rightHeight = heightOfBinaryTree(root.right);
+        int diameter_PassThroughRoot = leftHeight + rightHeight + 1;
+        // Case 2 : Find leftSub-tree diameter (it does not pass through root)
+        int leftDiameter = findDiameterTreeRecursive(root.left);
+        int rightDiameter = findDiameterTreeRecursive(root.right);
+        int diameter_NotPassThroughRoot = Math.max(leftDiameter, rightDiameter);
+
+        int finalDiameter = Math.max(diameter_PassThroughRoot, diameter_NotPassThroughRoot );
+        return finalDiameter;
+    }
+    // Maximum depth of a binary tree
+    public static int heightOfBinaryTree(TreeNode root){
+        int maxHeight =0;
+        if (root == null) return 0;
+        // Step 1
+        int leftHeight = heightOfBinaryTree(root.left);
+        // Step 2
+        int rightHeight = heightOfBinaryTree(root.right);
+        // Step 3
+        if (leftHeight > rightHeight){
+            maxHeight = leftHeight +1;
+        } else {
+            maxHeight = rightHeight +1;
+        }
+        return maxHeight;
     }
 
 }

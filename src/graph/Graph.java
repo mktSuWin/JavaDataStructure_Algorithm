@@ -1,70 +1,142 @@
 package graph;
 
-import LinkedListProblems.LinkedList;
 
+// BFS is similar to Level order traversal
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.LinkedList;
 
 public class Graph {
-    int[][] adjMatrix; // 2D matrix
-    Vertex[] vertexArr; // this is for vertex
-    ArrayList[] adjList;
-    int maxNumVertex;
-    int i;
-
-    public Graph(int maxNumVertex) {
-        this.adjMatrix = new int[maxNumVertex][maxNumVertex];
-        this.maxNumVertex = maxNumVertex;
-        this.vertexArr = new Vertex[maxNumVertex];
-        this.i = 0;
-        this.adjList = new ArrayList[maxNumVertex];
-
-        for (int i =0; i < maxNumVertex; i++){
-            for(int j =0; j < maxNumVertex; j++){
+    public final int MAX_INT = 20;
+    public Vertex vertexArray [];
+    public int[][] adjMatrix;
+    public Stack stack;
+    public Queue queue;
+    int nVertex;
+    // Adjacency List
+    public LinkedList<Integer>  adj[];
+    //
+    public Graph(){
+        vertexArray = new Vertex[MAX_INT];
+        adjMatrix = new int[MAX_INT][MAX_INT];
+        nVertex = 0;
+        for(int i = 0; i < MAX_INT; i++){
+            for(int j = 0; j < MAX_INT; j++){
                 adjMatrix[i][j] = 0;
             }
         }
+        stack = new Stack<>();
+        queue = new java.util.LinkedList<Integer>();
+    }
 
-        for(int i =0; i < maxNumVertex; i++){
-            adjList[i] = new ArrayList<>();
+    Graph(int number){
+        vertexArray = new Vertex[number];
+        adj = new LinkedList[number];
+        for(int i =0; i < number; i++){
+            adj[i] = new LinkedList<>();
+        }
+    }
+    // Add vertex
+    public void addVertex(char data){
+        Vertex vertex = new Vertex(data);
+        vertexArray[nVertex++] = vertex;
+    }
+
+    // Add edge
+    public void addEdge(int row, int col){
+        adjMatrix[row][col] = 1;
+    }
+
+    // Add edge list to Adjacency List
+    public void addEdgeLIst(int i, int j){
+        adj[i].add(j);
+    }
+
+    // Don't fully understand this part
+    public int getAdjacentVertex(int v){
+        for(int j = 0; j < nVertex; j++){
+            if (adjMatrix[v][j] == 1 && vertexArray[j].wasVisited == false){
+                return j;
+            }
+        }
+        return -1;
+    }
+
+    public void displayVertex(int v){
+        System.out.println(vertexArray[v].label);
+    }
+
+    public void DFS(){
+        // Source vertex - mark as visited
+        vertexArray[0].wasVisited = true;
+        displayVertex(0);
+        stack.push(0);
+        while(!stack.isEmpty()){
+            int v = getAdjacentVertex((int) stack.peek());
+            if (v == -1){
+                stack.pop();
+            }else {
+                vertexArray[v].wasVisited = true;
+                displayVertex(v);
+                stack.push(v);
+            }
+        }
+        for(int j = 0; j < nVertex; j++){
+            vertexArray[j].wasVisited = false;
         }
     }
 
-    public void addVertex(char label){
-        Vertex vertex = new Vertex(label);
-        vertexArr[i++] = vertex;
+
+    public void BFS(){
+        vertexArray[0].wasVisited = true;
+        displayVertex(0);
+        queue.add(0);
+        while (!queue.isEmpty()){
+            int v1 = (int) queue.remove();
+            int v2 = getAdjacentVertex(v1);
+            while ((v2 = getAdjacentVertex(v1)) != -1){
+                vertexArray[v2].wasVisited = true;
+                displayVertex(v2);
+                queue.add(v2);
+            }
+        }
+        for(int j = 0; j < nVertex; j++){
+            vertexArray[j].wasVisited = false;
+        }
     }
 
-    public void addEdge(int i , int j){
-        adjMatrix[i][j] = 1; // uni-directional , only one direction
-        //adjMatrix[j][i] = 1; // if I add this, it will be bidirectional
-        adjList[i].add(j);
-
-    }
-
-    // For directional graph
-    public void addEdge(int i , int j, int weight){
-        adjMatrix[i][j] = weight;
-        //adjMatrix[j][i] = 1; // if I add this, it will be bidirectional
-
-    }
-
-    public static void main(String[] args) {
-        Graph gp = new Graph(4);
-        gp.addVertex('A');
-        gp.addVertex('B');
-        gp.addVertex('C');
-        gp.addVertex('D');
-        gp.addEdge(0,1); // ab
-        gp.addEdge(0,2); // ac
-
-        gp.addEdge(1,2); // bc
-        gp.addEdge(1,3); // bd
-
-        gp.addEdge(2,0); // ca
-        gp.addEdge(2,3); // cd
-
-        gp.addEdge(3,2); // dc
-
-        System.out.println(gp);
+    public boolean findPathExist(char data){
+        vertexArray[0].wasVisited = true;
+        displayVertex(0);
+        queue.add(0);
+        while (!queue.isEmpty()){
+            int v1 = (int) queue.remove();
+            int v2 = 0;
+            while ((v2 = getAdjacentVertex(v1)) != -1){
+                if (data == vertexArray[v2].label){
+                    return true;
+                }
+                vertexArray[v2].wasVisited = true;
+                displayVertex(v2);
+                queue.add(v2);
+            }
+        }
+        return false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

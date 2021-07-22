@@ -80,6 +80,7 @@ public class LinkedList<I extends Number> {
         }
         return slow;
     }
+
 }
 
 
